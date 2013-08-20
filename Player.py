@@ -1,3 +1,5 @@
 class Player:
-    def __init__(self, playerType):
-        self.playerType = playerType
+    def __init__(self, player_type):
+        # "player_type" is one of 'X' or 'O'
+        self.player_type = player_type
+        
