@@ -22,12 +22,18 @@ class DeterministicGame:
         else:
             won = True
 
+        '''
+        # For the moment don't worry about
+        # forking, or about opponents forks,
+        # it makes things much more complicated.
+        
         if ~made_move:
             made_move = fork()       
- 
+        
         if ~made_move:
-            made_move = block_fork() 
-
+            made_move = block_fork()
+        '''
+        
         if ~made_move:
             made_move = center() 
 
@@ -39,6 +45,9 @@ class DeterministicGame:
 
         if ~made_move:
             made_move = empty_side()
+
+        if ~made_move:
+            made_move = random_place()        
 
         print_board_state()
 
@@ -72,6 +81,9 @@ class DeterministicGame:
         return False
 
     def empty_side(self):
+        return False
+
+    def random_place(self):
         return False
 
     ###################################
