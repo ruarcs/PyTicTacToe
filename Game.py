@@ -13,8 +13,12 @@ class Game:
                  'O', '_', '_']
         vectors = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
 
+
+
     def run(self):
         minimax_recursive(0, 0, 0, self.starting_player, self.board)
+        
+
 
     def minimax_recursive(self, depth, a, b, player, board):
         if depth > MAX_DEPTH:
@@ -22,12 +26,24 @@ class Game:
         else:           
             alpha = a;
             beta = b;
-            if player != starting_player:   #min layer
-                for #all child nodes
-                alpha = minimax_recursive()
+            moves = all_possible_moves(board) #generate all possible moves at this board state
+            if player == starting_player:   #min layer
+                for move in moves:
+                    alpha = minimax_recursive(depth+1,alpha,beta,player,board)
             else:
-                beta = minimax_recursive()
+                for move in moves:
+                    beta = minimax_recursive(depth+1,alpha,beta,player,board)
 
+    def all_possible_moves(self, board):
+        possible_moves = []
+        count = 0
+        for position in board:
+            if position == '_':
+                possible_moves.append(count)
+            count++
+        return possible_moves    
+
+    
     def heuristic_score(board, player):
         alpha = 0
         beta = 0
@@ -35,6 +51,8 @@ class Game:
             alpha += analyse_vector(board, vector, player)
             beta -= analyse_vector(board, vector, other_player(player))
         return alpha + beta
+
+
 
     def analyse_vector(board, vector, player):
         entries = count_entries_in_vector(board, vector, player)
@@ -45,12 +63,16 @@ class Game:
         else if entries == 1:
             return 10
 
+
+
     def count_entries_in_vector(board, vector, player):
         count = 0
         for index in vector:
             if board[index] == player:
                 count++
         return count
+
+
 
     def other_player(player):
         if player == 'X':
