@@ -30,6 +30,8 @@ class Game:
             count = count + 1
         return free_spaces
 
+
+
     def copy_board(self, board):
         new_board = ['','','','','','','','','']    #dummy entries
         count = 0
@@ -37,6 +39,7 @@ class Game:
             new_board[count] = entry
             count = count + 1
         return new_board
+
 
 
     def all_possible_child_boards(self, board, player):
@@ -52,8 +55,7 @@ class Game:
         return all_boards
 
     
-    
-    
+        
     def other_player(self, player):
         if player == 'X':
             return 'O'
@@ -61,8 +63,7 @@ class Game:
             return 'X'
       
       
-      
-      
+            
     # Check to see if there is a winner and if so set the state
     # of the member variable.    
     def check_for_win(self, board, current_player):
@@ -113,6 +114,7 @@ class Game:
         else:           
             lowest_score = 0;
             highest_score = 0;
+
             # Get all possible moves that could occur at this board state.
             boards = self.all_possible_child_boards(board, player)
             
