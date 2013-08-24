@@ -114,7 +114,8 @@ class Game:
             #return self.heuristic_score(board) # "-1" indicates no valid move
             return 0 #for the moment return 0 to indicate draw if we get too far down the tree.
         else:           
-            best_score = 0;
+            lowest_score = 0;
+            highest_score = 0;
             # Get all possible moves that could occur at this board state.
             boards = self.all_possible_child_boards(board, player)
             
@@ -133,14 +134,15 @@ class Game:
                 #Switch perspective and look at all possible moves from the other players point of view.
                 temp = self.minimax_recursive(depth+1, self.other_player(player), current_board) 
                 
-                if player == self.starting_player:  # if current player is the starting player then record maximums
-                    if temp > best_score:
-                        best_score = temp   #we're looking to MAXIMIZE our score.
-                else:                               # if current player is NOT the starting player then we're always
-                    if temp < best_score:           # looking for the minimum.
-                        best_score = temp   #other player is looking for the MINIMUM score from our perspective.
+                if player == self.starting_player:
+                    temp = (-1)*temp    #high score BAD for starting player.
+                    if temp < lowest_score:
+                        lowest_score = temp
+                else:
+                    if temp > highest_score:
+                        highest_score = temp
                         
-        return best_score
+        return max(lowest_score,highest_score)
      
      
      
