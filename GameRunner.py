@@ -1,5 +1,12 @@
+from Game import *
+
 class GameRunner:
-    'This class contains main and runs the game, asking the user for an input file.'
-    def __init__(self):
-        pass
+    'This class contains main and runs the game'
+        
+    def main():
+        game = Game()
+        game.run_game()
+        
+    if __name__ == '__main__':
+        main()
     

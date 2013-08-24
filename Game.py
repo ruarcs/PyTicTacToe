@@ -1,84 +1,149 @@
 class Game:
-    'This class encapsulates one particular game.'
-    def __init__(self, game_file):
-        #specify the file to read the game description from
-        self.game_file = game_file
-        
+    'This class encapsulates one particular game.'  
+    
+    # These are the 'vectors' across which we can get three in a row.
+    vectors = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] 
+    # This is the maximum depth we'll go to before taking the heuristic score.
+    MAX_DEPTH = 5     
+    # Some results
+    VICTORY = 1
+    DRAW = 0
+    DEFEAT = -1
 
-    #imported code
+
+
     def __init__(self):
-        starting_player = 'X'
-        board = ['_', 'X', '_',
-                 'O', 'X', '_',
-                 'O', '_', '_']
-        vectors = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+        self.starting_player = 'O'
+        self.board = ['O', 'X', 'O',
+                      ' ', 'X', 'X',
+                      'X', 'O', ' ']
+        self.winner = ''
 
 
 
-    def run(self):
-        minimax_recursive(0, 0, 0, self.starting_player, self.board)
-        
 
-
-    def minimax_recursive(self, depth, a, b, player, board):
-        if depth > MAX_DEPTH:
-            return heuristic_score(board, player)
-        else:           
-            alpha = a;
-            beta = b;
-            moves = all_possible_moves(board) #generate all possible moves at this board state
-            if player == starting_player:   #min layer
-                for move in moves:
-                    alpha = minimax_recursive(depth+1,alpha,beta,player,board)
-            else:
-                for move in moves:
-                    beta = minimax_recursive(depth+1,alpha,beta,player,board)
-
-    def all_possible_moves(self, board):
-        possible_moves = []
+    def get_free_spaces(self, board):
+        """ Get a list of the free spaces available on the board. """
+        free_spaces = []
         count = 0
-        for position in board:
-            if position == '_':
-                possible_moves.append(count)
-            count++
-        return possible_moves    
+        
+        for entry in board:
+            if entry == ' ':
+                free_spaces.append(count)
+            count = count + 1
+        return free_spaces
+
+    def copy_board(self, board):
+        new_board = ['','','','','','','','','']    #dummy entries
+        count = 0
+        for entry in board:
+            new_board[count] = entry
+            count = count + 1
+        return new_board
+
+
+    def all_possible_child_boards(self, board, player):
+        """ Generate a list of all of the possible child boards given the current board state. """
+        free_spaces = self.get_free_spaces(board)
+        all_boards = []
+        
+        for space in free_spaces:
+            board[space] = player
+            new_board = self.copy_board(board)
+            all_boards.append(new_board)
+            board[space] = ' '
+        return all_boards
 
     
-    def heuristic_score(board, player):
-        alpha = 0
-        beta = 0
-        for vector in vectors:  #check each vector
-            alpha += analyse_vector(board, vector, player)
-            beta -= analyse_vector(board, vector, other_player(player))
-        return alpha + beta
-
-
-
-    def analyse_vector(board, vector, player):
-        entries = count_entries_in_vector(board, vector, player)
-        if entries == 3:
-            return 1000
-        else if entries == 2:
-            return 100
-        else if entries == 1:
-            return 10
-
-
-
-    def count_entries_in_vector(board, vector, player):
-        count = 0
-        for index in vector:
-            if board[index] == player:
-                count++
-        return count
-
-
-
-    def other_player(player):
+    
+    
+    def other_player(self, player):
         if player == 'X':
             return 'O'
         else:
             return 'X'
+      
+      
+      
+      
+    # Check to see if there is a winner and if so set the state
+    # of the member variable.    
+    def check_for_win(self, board, current_player):
+        test_count = 1
+        for player in ['X','O']:
+            for vector in Game.vectors:
+                winning_line = True
+                for entry in vector:
+                    if board[entry] != player:
+                        winning_line = False
+                if winning_line == True:
+                    if current_player == player:
+                        return Game.VICTORY
+                    else:
+                        return Game.DEFEAT
+                test_count = test_count + 1
+        return Game.DRAW
+            
+        
+     
+        
+    def run_game(self):
+        
+        print 'Starting board state is:'
+        self.print_board_state()
+        print 'First player to go is: {}'.format(self.starting_player)
+        print 'Predicting the output now...'
+        
+        # Call the minimax algorithm with the starting board we're given.
+        # We'll get returned to us the best possible score we can manage,
+        # assuming our opponent tries to minimize our gain.
+        result = self.minimax_recursive(0, self.starting_player, self.board)
+
+        if result  == 1:
+            print '{} WINS!'.format(self.starting_player)
+        elif result == -1:
+            print '{} WINS!'.format(self.other_player(self.starting_player))
+        else:
+            print('DRAW!')
+      
+
+
+
+    def minimax_recursive(self, depth, player, board):
+        if depth > Game.MAX_DEPTH:
+            #return self.heuristic_score(board) # "-1" indicates no valid move
+            return 0 #for the moment return 0 to indicate draw if we get too far down the tree.
+        else:           
+            best_score = 0;
+            # Get all possible moves that could occur at this board state.
+            boards = self.all_possible_child_boards(board, player)
+            
+            if not boards:  #if no boards remaining then return 0
+                return 0
+          
+            # For all possible boards get the optimum score we can:  
+            for current_board in boards:
+                
+                # Winner will be 'X' or 'O' or ''
+                result = self.check_for_win(current_board, player)
+                if result != 0:
+                    # If we have a winner then return the result
+                    return result
+                
+                #Switch perspective and look at all possible moves from the other players point of view.
+                temp = self.minimax_recursive(depth+1, self.other_player(player), current_board) 
+                
+                if player == self.starting_player:  # if current player is the starting player then record maximums
+                    if temp > best_score:
+                        best_score = temp   #we're looking to MAXIMIZE our score.
+                else:                               # if current player is NOT the starting player then we're always
+                    if temp < best_score:           # looking for the minimum.
+                        best_score = temp   #other player is looking for the MINIMUM score from our perspective.
+                        
+        return best_score
+     
+     
+     
             
     ################################################
     ############### Utility Methods ################
@@ -86,22 +151,60 @@ class Game:
         
     # print the board state each time a move is made
     def print_board_state(self):
-        print(board[0]),
+        print(self.board[0]),
         print('|'),
-        print(board[1]),
+        print(self.board[1]),
         print('|'),
-        print(board[2]),
-        print('----')
-        print(board[3]),
+        print(self.board[2])
+        print(self.board[3]),
         print('|'),
-        print(board[4]),
+        print(self.board[4]),
         print('|'),
-        print(board[5]),
-        print('----')
-        print(board[6]),
+        print(self.board[5])
+        print(self.board[6]),
         print('|'),
-        print(board[7]),
+        print(self.board[7]),
         print('|'),
-        print(board[8])
+        print(self.board[8])
                     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+#################### UNUSED CODE ######################################     
         
+    '''
+    def count_entries_in_vector(self, board, vector, player):
+        count = 0
+        for index in vector:
+            if board[index] == player:
+                count = count + 1
+        return count    
+
+
+
+    def analyse_vector(self, board, vector, player):
+        entries = self.count_entries_in_vector(board, vector, player)
+        if entries == 3:
+            return VICTORY
+        elif entries == 2:
+            return 100
+        elif entries == 1:
+            return 10
+ 
+ 
+ 
+    def heuristic_score(self, board, player):
+        alpha = 0
+        beta = 0
+        for vector in Game.vectors:  #check each vector
+            alpha += self.analyse_vector(board, vector, player)
+            beta -= self.analyse_vector(board, vector, self.other_player(player))
+        return alpha + beta
+    '''
