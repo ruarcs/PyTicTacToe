@@ -12,13 +12,10 @@ class Game:
 
 
 
-    def __init__(self):
-        self.starting_player = 'O'
-        self.board = ['O', 'X', 'O',
-                      ' ', 'X', 'X',
-                      'X', 'O', ' ']
+    def __init__(self, starting_player, board):
+        self.starting_player = starting_player
+        self.board = board
         self.winner = ''
-
 
 
 
