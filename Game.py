@@ -142,15 +142,7 @@ class Game:
 
     def minimax_recursive(self, depth, player, board):
         if self.limit_depth and depth > Game.MAX_DEPTH:
-            # Check for winner just in case
-            result = self.check_for_win(board, player)
-            if result != Game.DRAW:
-                return result
-            else:
-                # Get an estimation of the current "goodness" of
-                # the board from the point of view of the 
-                # starting player.
-                return self.heuristic_score(board, player)
+            return self.heuristic_score(board, player)
         else:           
             lowest_score = 0;
             highest_score = 0;
