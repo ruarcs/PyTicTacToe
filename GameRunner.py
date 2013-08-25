@@ -5,10 +5,11 @@ class GameRunner:
         
     def main():
         starting_player = 'O'
-        board = ['X', ' ', ' ',
-                 'O', ' ', ' ',
-                 'O', ' ', 'X']
-        game = Game(starting_player, board)
+        board = ['O', 'X', 'O',
+                 ' ', ' ', ' ',
+                 'X', ' ', ' ']
+        limit_depth = True
+        game = Game(starting_player, board, limit_depth)
         game.run_game()
         
     if __name__ == '__main__':
