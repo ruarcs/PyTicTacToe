@@ -4,7 +4,7 @@ class Game:
     # These are the 'vectors' across which we can get three in a row.
     vectors = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] 
     # This is the maximum depth we'll go to before taking the heuristic score.
-    MAX_DEPTH = 2     
+    MAX_DEPTH = 3   
     # Some results
     VICTORY = 1000
     DRAW = 0
@@ -12,11 +12,12 @@ class Game:
 
 
 
-    def __init__(self, starting_player, board, limit_depth):
+    def __init__(self, starting_player, board, limit_depth, from_file):
         self.starting_player = starting_player
         self.board = board
         self.winner = ''
         self.limit_depth = limit_depth
+        self.from_file = from_file 
 
 
 
@@ -26,7 +27,7 @@ class Game:
         count = 0
         
         for entry in board:
-            if entry == ' ':
+            if entry == '_':
                 free_spaces.append(count)
             count = count + 1
         return free_spaces
@@ -34,7 +35,7 @@ class Game:
 
 
     def copy_board(self, board):
-        new_board = ['','','','','','','','','']    #dummy entries
+        new_board = ['_','_','_','_','_','_','_','_','_']    #dummy entries
         count = 0
         for entry in board:
             new_board[count] = entry
@@ -52,7 +53,7 @@ class Game:
             board[space] = player
             new_board = self.copy_board(board)
             all_boards.append(new_board)
-            board[space] = ' '
+            board[space] = '_'
         return all_boards
 
     
@@ -88,10 +89,11 @@ class Game:
         
     def run_game(self):
         
-        print 'Starting board state is:'
-        self.print_board_state()
-        print 'First player to go is: {}'.format(self.starting_player)
-        print 'Predicting the output now...'
+        if self.from_file == False:
+            print 'Starting board state is:'
+            self.print_board_state()
+            print 'First player to go is: {}'.format(self.starting_player)
+            print 'Predicting the output now...'
         
         # Call the minimax algorithm with the starting board we're given.
         # We'll get returned to us the best possible score we can manage,
@@ -99,11 +101,16 @@ class Game:
         result = self.minimax_recursive(0, self.starting_player, self.board)
 
         if result  == Game.VICTORY:
-            print '{} WINS!'.format(self.starting_player)
+            output = '{} wins'.format(self.starting_player)
         elif result == Game.DEFEAT:
-            print '{} WINS!'.format(self.other_player(self.starting_player))
+            output = '{} wins'.format(self.other_player(self.starting_player))
         else:
-            print('DRAW!')
+            output = 'Draw'
+            
+        if self.from_file == False:
+            print output
+        else:
+            return output
 
     def count_entries_in_vector(self, board, vector, player):
         count = 0
@@ -173,7 +180,13 @@ class Game:
                     if temp > highest_score:
                         highest_score = temp
                         
-        return max(lowest_score,highest_score)
+        # They will try to MAXIMIZE our disadvantage,
+        # i.e. try to maximize their score          
+        if player == self.starting_player:                
+            return min(lowest_score,highest_score)
+        else:
+        # We will try to maximize our score.
+            return max(lowest_score, highest_score)
      
      
      
