@@ -180,13 +180,13 @@ class Game:
                     if temp > highest_score:
                         highest_score = temp
                         
-        # They will try to MAXIMIZE our disadvantage,
-        # i.e. try to maximize their score          
-        if player == self.starting_player:                
-            return min(lowest_score,highest_score)
-        else:
-        # We will try to maximize our score.
-            return max(lowest_score, highest_score)
+            # They will try to MAXIMIZE our disadvantage,
+            # i.e. try to maximize their score          
+            if player == self.starting_player:                
+                return min(lowest_score,highest_score)
+            else:
+                # We will try to maximize our score.
+                return max(lowest_score, highest_score)
      
      
      
