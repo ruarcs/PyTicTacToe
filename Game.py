@@ -35,6 +35,7 @@ class Game:
 
 
     def copy_board(self, board):
+        """ Copy one board to a new one and return it. """
         new_board = ['_','_','_','_','_','_','_','_','_']    #dummy entries
         count = 0
         for entry in board:
@@ -82,13 +83,12 @@ class Game:
                     else:
                         return Game.DEFEAT
                 test_count = test_count + 1
-        return Game.DRAW
-            
+        return Game.DRAW    
         
      
         
     def run_game(self):
-        
+        """ Run the game. """
         if self.from_file == False:
             print 'Starting board state is:'
             self.print_board_state()
@@ -113,6 +113,7 @@ class Game:
             return output
 
     def count_entries_in_vector(self, board, vector, player):
+        """ Given a 'vector', check the number of entries a player has in it. """
         count = 0
         for index in vector:
             if board[index] == player:
@@ -122,7 +123,7 @@ class Game:
 
 
     def analyse_vector(self, board, vector, player):
-        """Analyse a single vector"""
+        """ Analyse a single vector. """
         entries = self.count_entries_in_vector(board, vector, player)
         entries_opponent = self.count_entries_in_vector(board, vector, self.other_player(player))
  
@@ -139,8 +140,10 @@ class Game:
                         # or two of one and one of the other (a drawn row), so it's a neutral result
       
     def heuristic_score(self, board, player):
-        """ Return a score between -1000 and 1000"""
+        """ Return a score score of the "goodness" of the board from the STARTING players point of view."""
         score = 0
+        # Always look at this score from the starting players point of view,
+        # so return a NEGATIVE score if the board is good for the non-starting player.
         modifier = 1 if (player == self.starting_player) else -1
         for vector in Game.vectors:  #check each vector
             score += modifier*(self.analyse_vector(board, vector, player))
@@ -148,6 +151,7 @@ class Game:
 
 
     def minimax_recursive(self, depth, player, board):
+        """ All of the legwork. Go through the game tree and record the best results from both points of view. """
         if self.limit_depth and depth > Game.MAX_DEPTH:
             return self.heuristic_score(board, player)
         else:           
@@ -173,12 +177,14 @@ class Game:
                 temp = self.minimax_recursive(depth+1, self.other_player(player), current_board) 
                 
                 if player == self.starting_player:
-                    temp = (-1)*temp    #high score BAD for starting player.
+                    temp = (-1)*temp    #high score here is BAD for starting player.
                     if temp < lowest_score:
                         lowest_score = temp
                 else:
                     if temp > highest_score:
                         highest_score = temp
+                        
+            # REMEMEBER: we are considering the OTHER player's score!!!!!!!            
                         
             # They will try to MAXIMIZE our disadvantage
             # Remember: we're looking at their score as
