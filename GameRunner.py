@@ -5,7 +5,7 @@ class GameRunner:
         
     def main():
         
-        limit_depth = False
+        limit_depth = True
         from_file = True
         
         filename = raw_input("Enter the name of your game file of choice:")
