@@ -1,0 +1,3 @@
+Case 1: X wins
+Case 2: O wins
+Case 3: Draw

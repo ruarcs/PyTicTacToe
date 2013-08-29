@@ -177,14 +177,15 @@ class Game:
                 temp = self.minimax_recursive(depth+1, self.other_player(player), current_board) 
                 
                 if player == self.starting_player:
-                    temp = (-1)*temp    #high score here is BAD for starting player.
-                    if temp < lowest_score:
-                        lowest_score = temp
-                else:
-                    if temp > highest_score:
-                        highest_score = temp
+                    temp = (-1)*temp          # We're ALWAYS interested in the score from the STARTING player's point of view
+                                              # so to keep an "absolute" score we look at the NON-STARTING player's score in
+                                              # the negative!!
+                if temp < lowest_score:
+                    lowest_score = temp       # high score here is BAD for starting player, as it is the OTHER player's score
+                elif temp > highest_score:
+                    highest_score = temp      # high score here is GOOD for starting player, as it is the THEIR score
                         
-            # REMEMEBER: we are considering the OTHER player's score!!!!!!!            
+            # REMEMBER: we are considering the OTHER player's score!!!!!!!     
                         
             # They will try to MAXIMIZE our disadvantage
             # Remember: we're looking at their score as
